@@ -1,1 +1,32 @@
-# Algorithms Project
+# 📊 Report: Divide & Conquer Algorithms
+
+## Architecture Notes
+Each algorithm controls recursion depth and allocations explicitly:
+- **MergeSort** uses a reusable buffer and switches to Insertion Sort for small subarrays (≤ CUTOFF), reducing both depth and memory pressure.  
+- **QuickSort** always recurses on the smaller partition and iterates over the larger, ensuring depth stays `O(log n)` with high probability.  
+- **Deterministic Select** recurses only on the needed side and prefers the smaller partition, bounding depth to `O(log n)`.  
+- **Closest Pair of Points** splits the array by x-coordinate, reuses sorting by y, and limits the strip check to ≤ 8 neighbors, keeping allocations minimal.
+
+---
+
+## Recurrence Analysis
+- **MergeSort**: Recurrence `T(n) = 2T(n/2) + Θ(n)` → by Master Theorem (Case 2) ⇒ `Θ(n log n)`. Balanced splits guarantee logarithmic depth.  
+- **QuickSort**: Recurrence (average) `T(n) = T(k) + T(n−k−1) + Θ(n)` with random pivot. Expected value ≈ `2T(n/2) + Θ(n)` ⇒ `Θ(n log n)`; worst case `Θ(n²)`, but mitigated by randomization and smaller-side recursion.  
+- **Deterministic Select (Median of Medians)**: Recurrence `T(n) ≤ T(n/5) + T(7n/10) + Θ(n)`; by Akra–Bazzi, total complexity `Θ(n)`.  
+- **Closest Pair**: Recurrence `T(n) = 2T(n/2) + Θ(n)`; Master Case 2 gives `Θ(n log n)`. The strip check is constant factor only.
+
+---
+
+## Experimental Plots
+- **Time vs n**: MergeSort and QuickSort both scale as `n log n`; QuickSort slightly faster in practice due to smaller constants, except on adversarial inputs.  
+- **Depth vs n**: Observed depth matches theoretical bounds (`O(log n)` for MS/QS, linear for trivial select fallback).  
+- **Constant factors**: Performance is affected by cache locality (buffer reuse in MergeSort improves speed) and garbage collection overhead (Java object churn avoided with in-place operations).
+
+---
+
+## Summary
+- **Alignment**: Asymptotic behaviors (`Θ(n log n)` for MS/QS/Closest, `Θ(n)` for Select) match measurements.  
+- **Mismatch**: Constant factors create differences—QuickSort outperforms MergeSort in practice despite identical asymptotics; Closest Pair shows higher constants from sorting and strip management.  
+- Overall, theory strongly predicts scaling trends, while implementation details (cache, cutoff, allocation strategy) explain real-world deviations.
+
+---
